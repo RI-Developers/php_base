@@ -45,12 +45,12 @@ if(!function_exists('load404')) {
 
         // コンテンツタイプを強制的に書き換える
         setContentsType();
+        setStatusHeader(404);
 
-        if(!empty($conf['404'])) {
+        // 無限ループ防止
+        if(!empty($conf['404']) && file_exists(VIEW_PATH . $conf['404'])) {
             loadView($conf['404']);
         }
-
-        setStatusHeader(404);
 
     }
 }
