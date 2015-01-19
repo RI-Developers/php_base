@@ -15,7 +15,7 @@ if(empty($conf['encoding'])) {
 
 // GETパラメータがある場合、切り離したパスを取得
 if(isset($_SERVER['QUERY_STRING'])) {
-    $load_path = str_replace('?' . $_SERVER['QUERY_STRING'], "", $_SERVER['REQUEST_URI']);
+    $load_path = str_replace('?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
 } else {
     $load_path = $_SERVER['REQUEST_URI'];
 }
