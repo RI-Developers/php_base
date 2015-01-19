@@ -9,6 +9,10 @@ require_once SYS_PATH . '/config/config.php';
 require_once SYS_PATH . '/common.php';
 require_once SYS_PATH . '/security.php';
 
+if(empty($conf['encoding'])) {
+    $conf['encoding'] = 'UTF-8';
+}
+
 // GETパラメータがある場合、切り離したパスを取得
 if(isset($_SERVER['QUERY_STRING'])) {
     $load_path = str_replace('?' . $_SERVER['QUERY_STRING'], "", $_SERVER['REQUEST_URI']);

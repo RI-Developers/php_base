@@ -5,7 +5,6 @@
  */
 
 if(!function_exists('loadView')) {
-
     function loadView($filename, $load = false, $vars = null) {
 
         if(!file_exists(VIEW_PATH . $filename)) {
@@ -14,14 +13,11 @@ if(!function_exists('loadView')) {
         }
 
         if($load) {
-
             $files = glob(SYS_PATH . '/common/*');
-
             if($files !== false && !empty($files)) {
                 foreach($files as $file) {
                     require $file;
                 }
-
             }
 
         }
@@ -43,7 +39,6 @@ if(!function_exists('loadView')) {
 
 
 if(!function_exists('load404')) {
-
     function load404() {
 
         global $conf;
@@ -51,7 +46,7 @@ if(!function_exists('load404')) {
         // コンテンツタイプを強制的に書き換える
         setContentsType();
 
-        if(isset($conf['404']) && !empty($conf['404'])) {
+        if(!empty($conf['404'])) {
             loadView($conf['404']);
         }
 
@@ -261,9 +256,22 @@ if(!function_exists('setContentsType')) {
             $mime_type = isset($mime_code[$extention]) ? $mime_code[$extention] : 'text/html';
         }
 
-        $encoding = isset($conf['encoding']) ? $conf['encoding'] : 'UTF-8';
+        $encoding = $conf['encoding'];
 
         header("Content-Type: {$mime_type}; charset={$encoding}", true);
 
     }
+}
+
+if(!function_exists('html_escape')) {
+
+    function html_escape($string, $encoding = null, $double = false) {
+        global $conf;
+        if(empty($encoding)) {
+            $encoding = $conf['encoding'];
+        }
+
+        return htmlspecialchars($string, ENT_QUOTES, $encoding, $double);
+    }
+
 }
