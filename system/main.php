@@ -29,7 +29,12 @@ $dot = stripos($load_path, '.');
 
 if($dot === false) {
 
-    $load_path .= '.php';
+    if(file_exists(VIEW_PATH . $load_path . '/index.php')) {
+        $load_path .= '/index.php';
+    } else {
+        $load_path .= '.php';
+    }
+
     $extension = 'php';
 
 } else {
