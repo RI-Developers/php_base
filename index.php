@@ -9,7 +9,7 @@ $base_dir = '/';
 if($base_dir === '/') {
     define('BASE_PATH', str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['SCRIPT_FILENAME']));
 } else {
-    define('BASE_PATH', str_replace($base_dir . $_SERVER['SCRIPT_NAME'], '', $_SERVER['SCRIPT_FILENAME']));
+    define('BASE_PATH', str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['SCRIPT_FILENAME']) . $base_dir);
 }
 
 define('VIEW_PATH', BASE_PATH . '/view');
