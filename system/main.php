@@ -20,6 +20,10 @@ if(isset($_SERVER['QUERY_STRING'])) {
     $load_path = $_SERVER['REQUEST_URI'];
 }
 
+if($base_dir !== '/') {
+    $load_path = preg_replace('/^' . str_replace('/', '\/', $base_dir) . '/', '', $load_path);
+}
+
 // スラッシュで終わってたら最後のスラッシュを削除する
 if($load_path[mb_strlen($load_path, $conf['encoding']) - 1] === '/') {
     $load_path = mb_substr($load_path, 0, -1, $conf['encoding']);
