@@ -7,7 +7,7 @@
 if(!function_exists('loadView')) {
     function loadView($filename, $load = false, $vars = null) {
 
-        if(!file_exists(VIEW_PATH . $filename)) {
+        if(!fileCheck(VIEW_PATH . $filename)) {
             load404();
             return;
         }
@@ -52,6 +52,22 @@ if(!function_exists('load404')) {
             loadView($conf['404']);
         }
 
+    }
+}
+
+if(!function_exists('fileCheck')) {
+    function fileCheck($path) {
+        $real_path = realpath($path);
+
+        if($real_path === false || !file_exists($path)) {
+            return false;
+        }
+
+        if(strstr($real_path, realpath(BASE_PATH)) === false) {
+            return false;
+        }
+
+        return true;
     }
 }
 

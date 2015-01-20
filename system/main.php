@@ -20,6 +20,9 @@ if(isset($_SERVER['QUERY_STRING'])) {
     $load_path = $_SERVER['REQUEST_URI'];
 }
 
+// ディレクトリトラバーサル対策
+$load_path = str_replace(array('../', '..\\', '\0'), '', $load_path);
+
 if($base_dir !== '/') {
     $load_path = preg_replace('/^' . str_replace('/', '\/', $base_dir) . '/', '', $load_path);
 }
