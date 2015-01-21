@@ -34,11 +34,9 @@ if(!(isset($conf['security']['header']) && $conf['security']['header'] === false
 
         } else {
 
-            $allow_from = 'ALLOW-FROM';
+            $allow_from = 'ALLOW-FROM ';
 
-            foreach($conf['security']['header']['X-FRAME-OPTIONS'] as $domain) {
-                $allow_from .= ' ' . $domain;
-            }
+            $allow_from .= implode(' ', $conf['security']['header']['X-FRAME-OPTIONS']);
         }
 
         header('X-FRAME-OPTIONS: ' . $allow_from);
