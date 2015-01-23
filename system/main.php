@@ -50,9 +50,11 @@ if($dot === false) {
 
 }
 
-setContentsType($extension);
+if(setContentsType($extension) === 'movie') {
 
-if($extension === 'php') {
+    loadMovie($load_path);
+
+} else if($extension === 'php') {
 
     if(isset($vars)) {
         loadView($load_path, true, $vars);
