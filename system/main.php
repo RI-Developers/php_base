@@ -46,7 +46,7 @@ if($dot === false) {
 
 } else {
 
-    $extension = mb_substr($load_path, $dot + 1, null, $conf['encoding']);
+    $extension = mb_substr($load_path, $dot + 1/*, null, $conf['encoding']*/);
 
 }
 
