@@ -19,7 +19,9 @@ if(isset($_SERVER['QUERY_STRING'])) {
 } else {
     $load_path = $_SERVER['REQUEST_URI'];
 }
-
+echo 'hoge';
+var_dump($load_path);
+exit(var_dump($_SERVER));
 // ディレクトリトラバーサル対策
 $load_path = str_replace(array('../', '..\\', '\0'), '', $load_path);
 
@@ -32,7 +34,7 @@ if($load_path[mb_strlen($load_path, $conf['encoding']) - 1] === '/') {
     $load_path = mb_substr($load_path, 0, -1, $conf['encoding']);
 }
 
-$dot = stripos($load_path, '.');
+$dot = strripos($load_path, '.');
 
 if($dot === false) {
 
