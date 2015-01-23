@@ -19,9 +19,7 @@ if(isset($_SERVER['QUERY_STRING'])) {
 } else {
     $load_path = $_SERVER['REQUEST_URI'];
 }
-echo 'hoge';
-var_dump($load_path);
-exit(var_dump($_SERVER));
+
 // ディレクトリトラバーサル対策
 $load_path = str_replace(array('../', '..\\', '\0'), '', $load_path);
 
