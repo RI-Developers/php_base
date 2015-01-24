@@ -37,8 +37,8 @@ if(!function_exists('loadView')) {
 
 }
 
-if(!function_exists('loadMovie')) {
-    function loadMovie($filename) {
+if(!function_exists('loadRange')) {
+    function loadRange($filename) {
 
         if(!fileCheck(VIEW_PATH . $filename)) {
             load404();
@@ -49,7 +49,14 @@ if(!function_exists('loadMovie')) {
             rangeDownload(VIEW_PATH . $filename);
         } else {
             header('Content-Length: ' . filesize(VIEW_PATH . $filename));
-            readfile(VIEW_PATH . $filename);
+
+            $handle = fopen(VIEW_PATH . $filename, 'rb');
+            while(!feof($handle)) {
+                echo fread($handle, 4096);
+                ob_flush();
+                flush();
+            }
+            fclose($handle);
         }
 
     }

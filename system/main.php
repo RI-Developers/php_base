@@ -50,9 +50,11 @@ if($dot === false) {
 
 }
 
-if(setContentsType($extension) === 'movie') {
+$content_type = setContentsType($extension);
 
-    loadMovie($load_path);
+if($content_type === 'movie' || $content_type == 'audio') {
+
+    loadRange($load_path);
 
 } else if($extension === 'php') {
 
