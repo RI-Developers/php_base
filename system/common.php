@@ -318,7 +318,11 @@ if(!function_exists('setContentsType')) {
 
         $encoding = $conf['encoding'];
 
-        header("Content-Type: {$mime_type}; charset={$encoding}", true);
+        if($mime_code[$extention][1] === 'text') {
+            header("Content-Type: {$mime_type}; charset={$encoding}", true);
+        } else {
+            header("Content-Type: {$mime_type}", true);
+        }
 
         return $mime_code[$extention][1];
 
@@ -326,6 +330,7 @@ if(!function_exists('setContentsType')) {
 
 }
 
+// code: http://mobiforge.com/design-development/content-delivery-mobile-devices
 if(!function_exists('rangeDownload')) {
     function rangeDownload($file) {
 
@@ -363,7 +368,7 @@ if(!function_exists('rangeDownload')) {
                 // (?) Shoud this be issued here, or should the first
                 // range be used? Or should the header be ignored and
                 // we output the whole content?
-                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                setStatusHeader(416);
                 header("Content-Range: bytes $start-$end/$size");
                 // (?) Echo some info to the client?
                 exit;
@@ -389,8 +394,7 @@ if(!function_exists('rangeDownload')) {
             $c_end = ($c_end > $end) ? $end : $c_end;
             // Validate the requested range and return an error if it's not correct.
             if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
-
-                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                setStatusHeader(416);
                 header("Content-Range: bytes $start-$end/$size");
                 // (?) Echo some info to the client?
                 exit;
@@ -399,7 +403,7 @@ if(!function_exists('rangeDownload')) {
             $end    = $c_end;
             $length = $end - $start + 1; // Calculate new content length
             fseek($fp, $start);
-            header('HTTP/1.1 206 Partial Content');
+            setStatusHeader(206);
         }
         // Notify the client the byte range we'll be outputting
         header("Content-Range: bytes $start-$end/$size");
@@ -424,9 +428,18 @@ if(!function_exists('rangeDownload')) {
     }
 }
 
-if(!function_exists('html_escape')) {
+if(!function_exists('addCacheControl')) {
 
-    function html_escape($string, $encoding = null, $double = false) {
+    function addCacheeControl($type) {
+        if(empty($type) || $type === 'auto') return;
+
+
+    }
+}
+
+if(!function_exists('htmlEscape')) {
+
+    function htmlEscape($string, $double = false, $encoding = null) {
         global $conf;
         if(empty($encoding)) {
             $encoding = $conf['encoding'];
@@ -435,4 +448,14 @@ if(!function_exists('html_escape')) {
         return htmlspecialchars($string, ENT_QUOTES, $encoding, $double);
     }
 
+}
+
+if(!function_exists('isSsl')) {
+
+    function isSsl() {
+        if (isset($_SERVER['HTTPS'])) {
+            return ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === '1');
+        }
+        return false;
+    }
 }
