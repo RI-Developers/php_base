@@ -376,7 +376,7 @@ if(!function_exists('rangeDownload')) {
             // If the range starts with an '-' we start from the beginning
             // If not, we forward the file pointer
             // And make sure to get the end byte if spesified
-            if ($range0 == '-') {
+            if ($range[0] == '-') {
 
                 // The n-number of the last bytes is requested
                 $c_start = $size - substr($range, 1);
@@ -430,8 +430,32 @@ if(!function_exists('rangeDownload')) {
 
 if(!function_exists('addCacheControl')) {
 
-    function addCacheeControl($type) {
-        if(empty($type) || $type === 'auto') return;
+    function addCacheeControl($type, $content_type = null) {
+        if(empty($type) || $type === 'auto') {
+            if(function_exists('header_remove')) {
+                header_remove('Pragma');
+            } else {
+                header('Pragma: ');
+            }
+            return;
+        }
+
+        if(gettype($type) === 'array' && !empty($content_type) && isset($type[$content_type])) {
+            addCacheeControl($type[$content_type]);
+            return;
+        }
+
+        switch($type) {
+            case 'no-cache':
+                header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+                header('Cache-Control: no-store, no-cache, must-revalidate');
+                header('Cache-Control: post-check=0, pre-check=0', false);
+                header('Pragma: no-cache');
+                break;
+            default:
+
+        }
 
 
     }
