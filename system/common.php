@@ -49,8 +49,26 @@ if(!function_exists('setSecurityHeader')) {
     function setSecurityHeader() {
         global $conf;
 
-        if(!(isset($conf['security']['header']['X-XSS-Protection']) && $conf['security']['header']['X-XSS-Protection'] === false)) {
-            header('X-Powered-By: ' . $conf['security']['header']['X-XSS-Protection']);
+        if (isset($conf['security']['header']) && $conf['security']['header'] === false) {
+            return;
+        }
+
+        $header = $conf['security']['header'];
+
+        /*
+         * XSSフィルター機能の有効化
+         * デフォルト値推奨
+         */
+        if (!(isset($header['X-XSS-Protection']) && $header['X-XSS-Protection'] === false)) {
+            header('X-XSS-Protection: ' . $header['X-XSS-Protection']);
+        }
+
+        /*
+         * サイトへのアクセスを次回以降最初からSSL通信を試す。
+         * 詳しくはconfig.phpを見てください。
+         */
+        if (isSSL() && !(isset($header['Strict-Transport-Security']) && $header['Strict-Transport-Security'] === false)) {
+            header('Strict-Transport-Security: ' . $header['Strict-Transport-Security']);
         }
     }
 }
@@ -477,7 +495,7 @@ if(!function_exists('addCacheControl')) {
             if(function_exists('header_remove')) {
                 header_remove('Pragma');
             } else {
-                header('Pragma: ');
+                header('Pragma:');
             }
             return;
         }
@@ -503,6 +521,7 @@ if(!function_exists('addCacheControl')) {
     }
 }
 
+
 if(!function_exists('htmlEscape')) {
 
     function htmlEscape($string, $double = false, $encoding = null) {
@@ -516,12 +535,14 @@ if(!function_exists('htmlEscape')) {
 
 }
 
-if(!function_exists('isSsl')) {
 
-    function isSsl() {
+if(!function_exists('isSSL')) {
+
+    function isSSL() {
         if (isset($_SERVER['HTTPS'])) {
             return ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === '1');
         }
         return false;
     }
+
 }

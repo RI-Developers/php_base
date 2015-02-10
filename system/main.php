@@ -59,7 +59,7 @@ $replace_array = array(
     // ディレクトリトラバーサル対策
     '../', '..\\', '\0',
     // たまに問題起きるので
-    (isSsl() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
+    (isSSL() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
 );
 
 if($base_dir !== '/') {

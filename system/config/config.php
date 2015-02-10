@@ -16,14 +16,21 @@
 
 
 $conf = array(
-    'encoding' => 'UTF-8',
-    '404'      => '/404.php',
-    'security' => array(
+    'encoding'   => 'UTF-8',
+    '404'        => '/404.php',
+    'security'   => array(
         'header' => array(
             'X-Powered-By' => true,
-            'X-FRAME-OPTIONS' => 'SAMEORIGIN',
+            'X-Frame-Options' => 'SAMEORIGIN',
             'X-XSS-Protection' => '1; mode=block',
-            'X-Content-Type-Options' => true
+            'X-Content-Type-Options' => true,
+            // サイトへのアクセスを次回以降最初からSSL通信を試す。
+            // SSL証明書を使用する場合のみ設定するといいです。
+            // コメントで例も書いておきます。
+            'Strict-Transport-Security' => false,
+            //'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains', // サブドメインも含む
+            //'Strict-Transport-Security' => 'max-age=31536000',                    // サブドメインは含まない
+
         )
     ),
     'production' => array(
@@ -33,9 +40,9 @@ $conf = array(
             'image' => 'no-cache',
             'movie' => 'no-cache'
         ),
-        'debug' => false, // display_errorsの指定
+        'debug'           => false, // display_errorsの指定
         'error_reporting' => E_ALL ^ E_DEPRECATED,
-        'log'   => '/var/log/php_micro_error.log'
+        'log'             => '/var/log/php_micro_error.log'
     ),
     'developer' => array(
         'cache' => 'no-cache',
