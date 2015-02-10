@@ -376,7 +376,7 @@ if(!function_exists('setContentsType')) {
             $mime_type = $mime_code[$extention][0];
         }
 
-        $encoding = $conf['encoding'];
+        $encoding = SYSTEM_ENCODING;
 
         if($mime_code[$extention][1] === 'text') {
             header("Content-Type: {$mime_type}; charset={$encoding}", true);
@@ -525,9 +525,8 @@ if(!function_exists('addCacheControl')) {
 if(!function_exists('htmlEscape')) {
 
     function htmlEscape($string, $double = false, $encoding = null) {
-        global $conf;
         if(empty($encoding)) {
-            $encoding = $conf['encoding'];
+            $encoding = SYSTEM_ENCODING;
         }
 
         return htmlspecialchars($string, ENT_QUOTES, $encoding, $double);

@@ -22,6 +22,10 @@ if(empty($conf['encoding'])) {
     $conf['encoding'] = 'UTF-8';
 }
 
+if(!defined('SYSTEM_ENCODING')) {
+    define('SYSTEM_ENCODING', $conf['encoding']);
+}
+
 /*
  * phpのコンフィグ周りの設定
  */
@@ -69,8 +73,8 @@ if($base_dir !== '/') {
 $load_path = str_replace($replace_array, '', $load_path);
 
 // スラッシュで終わってたら最後のスラッシュを削除する
-if($load_path[mb_strlen($load_path, $conf['encoding']) - 1] === '/') {
-    $load_path = mb_substr($load_path, 0, -1, $conf['encoding']);
+if($load_path[mb_strlen($load_path, SYSTEM_ENCODING) - 1] === '/') {
+    $load_path = mb_substr($load_path, 0, -1, SYSTEM_ENCODING);
 }
 
 $dot = strripos($load_path, '.');
@@ -87,7 +91,7 @@ if($dot === false) {
 
 } else {
 
-    $extension = mb_substr($load_path, $dot + 1, mb_strlen($load_path, $conf['encoding']), $conf['encoding']);
+    $extension = mb_substr($load_path, $dot + 1, mb_strlen($load_path, SYSTEM_ENCODING), SYSTEM_ENCODING);
 
 }
 
