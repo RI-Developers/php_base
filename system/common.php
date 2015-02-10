@@ -12,6 +12,8 @@ if(!function_exists('loadView')) {
             return;
         }
 
+        setSecurityHeader();
+
         if($load) {
             $files = glob(SYS_PATH . '/common/*');
             if($files !== false && !empty($files)) {
@@ -35,6 +37,22 @@ if(!function_exists('loadView')) {
 
     }
 
+}
+
+
+if(!function_exists('setSecurityHeader')) {
+    /**
+     * text/html形式の時に設定するヘッダ
+     * TODO:Strict-Transport-Securityのサポート
+     * TODO:CSPのサポート
+     */
+    function setSecurityHeader() {
+        global $conf;
+
+        if(!(isset($conf['security']['header']['X-XSS-Protection']) && $conf['security']['header']['X-XSS-Protection'] === false)) {
+            header('X-Powered-By: ' . $conf['security']['header']['X-XSS-Protection']);
+        }
+    }
 }
 
 
