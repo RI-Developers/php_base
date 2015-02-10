@@ -37,6 +37,28 @@ if(!function_exists('loadView')) {
 
 }
 
+
+if(!function_exists('loadFile')) {
+    function loadFile($filename, $type) {
+
+        if(!fileCheck(VIEW_PATH . $filename)) {
+            load404();
+            return;
+        }
+
+        if($type !== 'text' && $type !== 'other') {
+
+            loadRange($filename);
+
+        } else {
+
+            readfile(VIEW_PATH . $filename);
+        }
+    }
+
+}
+
+
 if(!function_exists('loadRange')) {
     function loadRange($filename) {
 
@@ -44,6 +66,8 @@ if(!function_exists('loadRange')) {
             load404();
             return;
         }
+
+        header('Accept-Ranges: bytes');
 
         if (isset($_SERVER['HTTP_RANGE'])) {
             rangeDownload(VIEW_PATH . $filename);

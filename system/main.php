@@ -93,11 +93,7 @@ if($dot === false) {
 
 $content_type = setContentsType($extension);
 
-if($content_type === 'movie' || $content_type == 'audio') {
-
-    loadRange($load_path);
-
-} else if($extension === 'php') {
+if($extension === 'php') {
 
     if(isset($vars)) {
         loadView($load_path, true, $vars);
@@ -108,6 +104,6 @@ if($content_type === 'movie' || $content_type == 'audio') {
 } else {
 
     // phpでない場合はそのままファイルを読みに行く
-    loadView($load_path);
+    loadFile($load_path, $content_type);
 
 }
