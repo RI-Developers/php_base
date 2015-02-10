@@ -22,7 +22,8 @@ $conf = array(
         'header' => array(
             'X-Powered-By' => true,
             'X-FRAME-OPTIONS' => 'SAMEORIGIN',
-            'X-XSS-Protection' => '1; mode=block'
+            'X-XSS-Protection' => '1; mode=block',
+            'X-Content-Type-Options' => true
         )
     ),
     'production' => array(

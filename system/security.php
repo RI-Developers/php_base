@@ -42,4 +42,12 @@ if(!(isset($conf['security']['header']) && $conf['security']['header'] === false
         header('X-FRAME-OPTIONS: ' . $allow_from);
     }
 
+    /*
+     * ブラウザによるファイルの自動判別
+     * デフォルトだと無効化する
+     */
+    if(!(isset($conf['security']['header']['X-Content-Type-Options']) && $conf['security']['header']['X-Content-Type-Options'] === false)) {
+        header('X-Content-Type-Options: nosniff');
+    }
+
 }
