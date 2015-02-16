@@ -119,11 +119,11 @@ if(!function_exists('setSecurityHeader')) {
                         $source = makeRandStr($length);
                     }
 
-                    define('CSP_NONCE_VALUE', $source);
+                    define('CSP_NONCE_VALUE', base64_encode($source));
                 }
 
 
-                $nonce = " 'nonce-" . base64_encode(CSP_NONCE_VALUE) . "'";
+                $nonce = " 'nonce-" . CSP_NONCE_VALUE . "'";
 
                 $src .= $nonce;
             }
@@ -134,6 +134,16 @@ if(!function_exists('setSecurityHeader')) {
 
             header('Content-Security-Policy:' . $src);
         }
+    }
+}
+
+if(!function_exists('getNonce')) {
+    /**
+     * CSP nonceをhttpヘッダに指定している場合に使う。
+     * @return string
+     */
+    function getNonce() {
+        return defined('CSP_NONCE_VALUE') ? CSP_NONCE_VALUE : '';
     }
 }
 
