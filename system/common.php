@@ -97,7 +97,7 @@ if(!function_exists('setSecurityHeader')) {
                     break;
                 }
 
-                if($csp['nonce-fallback'] && $key === 0) {
+                if(isset($csp['nonce-fallback']) && $csp['nonce-fallback'] && $key === 0) {
                     $src = " 'unsafe-inline'";
                 }
 
