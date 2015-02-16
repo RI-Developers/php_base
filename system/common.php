@@ -5,6 +5,11 @@
  */
 
 if(!function_exists('loadView')) {
+    /**
+     * @param string $filename
+     * @param bool $load
+     * @param null $vars
+     */
     function loadView($filename, $load = false, $vars = null) {
 
         if(!fileCheck(VIEW_PATH . $filename)) {
@@ -83,42 +88,51 @@ if(!function_exists('setSecurityHeader')) {
             $src = '';
 
             foreach($csp['policy'] as $key => $policy) {
-                if($policy === 'nonce') {
-                    if($csp['nonce-fallback'] && $key === 0) {
-                        $src = 'unsafe-inline';
+                if(!$policy === 'nonce') {
+                    if(strpos($policy, '.') === true) {
+                        $src .= ' ' . $policy;
+                    } else {
+                        $src .= " '" . $policy . "'";
                     }
-
-                    if(!defined('CSP_NONCE_VALUE')) {
-
-                        if(isset($csp['nonce-length'])) {
-                            $length = $csp['nonce-length'];
-                        } else {
-                            $length = 16;
-                        }
-
-                        if (function_exists('openssl_random_pseudo_bytes')) {
-                            $crypto_strong = true;
-                            $source = openssl_random_pseudo_bytes($length, $crypto_strong);
-                            if (!$crypto_strong) {
-                                $source = str_shuffle($source);
-                            }
-                        } else {
-                            $source = makeRandStr($length);
-                        }
-
-                        define('CSP_NONCE_VALUE', $source);
-                    }
-
-
-                    $nonce = "'nonce-" . base64_encode(CSP_NONCE_VALUE) . "'";
-
-                    $src = $src === '' ? $nonce : $src . '; ' . $nonce;
-
-                } else {
-                    $src = $src === '' ? "'" . $policy . "'" : $src . "; '" . $policy . "'";
+                    break;
                 }
+
+                if($csp['nonce-fallback'] && $key === 0) {
+                    $src = " 'unsafe-inline'";
+                }
+
+                if(!defined('CSP_NONCE_VALUE')) {
+
+                    if(isset($csp['nonce-length'])) {
+                        $length = $csp['nonce-length'];
+                    } else {
+                        $length = 16;
+                    }
+
+                    if (function_exists('openssl_random_pseudo_bytes')) {
+                        $crypto_strong = true;
+                        $source = openssl_random_pseudo_bytes($length, $crypto_strong);
+                        if (!$crypto_strong) {
+                            $source = str_shuffle($source);
+                        }
+                    } else {
+                        $source = makeRandStr($length);
+                    }
+
+                    define('CSP_NONCE_VALUE', $source);
+                }
+
+
+                $nonce = " 'nonce-" . base64_encode(CSP_NONCE_VALUE) . "'";
+
+                $src .= $nonce;
             }
-            header('Content-Security-Policy: script-src ' . $src);
+
+            if($src !== '') {
+                $src = 'script-src' . $src;
+            }
+
+            header('Content-Security-Policy:' . $src);
         }
     }
 }
@@ -145,8 +159,8 @@ if(!function_exists('makeRandStr')) {
 if(!function_exists('loadFile')) {
     /**
      * 静的コンテンツ読み込み
-     * @param $filename
-     * @param $type
+     * @param string $filename
+     * @param string $type text|compression|image|sound|movie|other
      */
     function loadFile($filename, $type) {
 
@@ -169,6 +183,9 @@ if(!function_exists('loadFile')) {
 
 
 if(!function_exists('loadRange')) {
+    /**
+     * @param string $filename
+     */
     function loadRange($filename) {
 
         if(!fileCheck(VIEW_PATH . $filename)) {
@@ -216,6 +233,10 @@ if(!function_exists('load404')) {
 }
 
 if(!function_exists('fileCheck')) {
+    /**
+     * @param string $path
+     * @return bool
+     */
     function fileCheck($path) {
         $real_path = realpath($path);
 
@@ -233,6 +254,10 @@ if(!function_exists('fileCheck')) {
 
 
 if(!function_exists('setStatusHeader')) {
+    /**
+     * @param int $code
+     * @param string $text
+     */
     function setStatusHeader($code = 200, $text = '') {
         $status_code = array(
             200 => 'OK',
@@ -294,6 +319,11 @@ if(!function_exists('setStatusHeader')) {
 
 
 if(!function_exists('setContentsType')) {
+    /**
+     * @param string $extention
+     * @param string $mime_type
+     * @return string text|compression|image|sound|movie|other
+     */
     function setContentsType($extention = 'html', $mime_type = '') {
 
         global $conf;
@@ -468,6 +498,9 @@ if(!function_exists('setContentsType')) {
 
 // code: http://mobiforge.com/design-development/content-delivery-mobile-devices
 if(!function_exists('rangeDownload')) {
+    /**
+     * @param string $file path name.
+     */
     function rangeDownload($file) {
 
         $fp = @fopen($file, 'rb');
@@ -565,7 +598,10 @@ if(!function_exists('rangeDownload')) {
 }
 
 if(!function_exists('addCacheControl')) {
-
+    /**
+     * @param string $type
+     * @param string $content_type
+     */
     function addCacheeControl($type, $content_type = null) {
         if(empty($type) || $type === 'auto') {
             if(function_exists('header_remove')) {
@@ -599,7 +635,12 @@ if(!function_exists('addCacheControl')) {
 
 
 if(!function_exists('htmlEscape')) {
-
+    /**
+     * @param string $string
+     * @param bool $double
+     * @param null $encoding
+     * @return string
+     */
     function htmlEscape($string, $double = false, $encoding = null) {
         if(empty($encoding)) {
             $encoding = SYSTEM_ENCODING;
@@ -612,7 +653,9 @@ if(!function_exists('htmlEscape')) {
 
 
 if(!function_exists('isSSL')) {
-
+    /**
+     * @return bool
+     */
     function isSSL() {
         if (isset($_SERVER['HTTPS'])) {
             return ($_SERVER['HTTPS'] === 'on' || $_SERVER['HTTPS'] === '1');
