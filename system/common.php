@@ -70,11 +70,84 @@ if(!function_exists('setSecurityHeader')) {
         if (isSSL() && !(isset($header['Strict-Transport-Security']) && $header['Strict-Transport-Security'] === false)) {
             header('Strict-Transport-Security: ' . $header['Strict-Transport-Security']);
         }
+
+        /*
+         * CSPの有効化
+         * nonceを使用する場合はCSP_NONCE_VALUEが定義されます。
+         * TODO:script-src以外の対応
+         */
+        if (!(isset($header['Content-Security-Policy']) && $header['Content-Security-Policy'] === false)) {
+
+            $csp = $header['Content-Security-Policy'];
+
+            $src = '';
+
+            foreach($csp['policy'] as $key => $policy) {
+                if($policy === 'nonce') {
+                    if($csp['nonce-fallback'] && $key === 0) {
+                        $src = 'unsafe-inline';
+                    }
+
+                    if(!defined('CSP_NONCE_VALUE')) {
+
+                        if(isset($csp['nonce-length'])) {
+                            $length = $csp['nonce-length'];
+                        } else {
+                            $length = 16;
+                        }
+
+                        if (function_exists('openssl_random_pseudo_bytes')) {
+                            $crypto_strong = true;
+                            $source = openssl_random_pseudo_bytes($length, $crypto_strong);
+                            if (!$crypto_strong) {
+                                $source = str_shuffle($source);
+                            }
+                        } else {
+                            $source = makeRandStr($length);
+                        }
+
+                        define('CSP_NONCE_VALUE', $source);
+                    }
+
+
+                    $nonce = "'nonce-" . base64_encode(CSP_NONCE_VALUE) . "'";
+
+                    $src = $src === '' ? $nonce : $src . '; ' . $nonce;
+
+                } else {
+                    $src = $src === '' ? "'" . $policy . "'" : $src . "; '" . $policy . "'";
+                }
+            }
+            header('Content-Security-Policy: script-src ' . $src);
+        }
     }
 }
 
 
+if(!function_exists('makeRandStr')) {
+    /**
+     * http://qiita.com/TetsuTaka/items/bb020642e75458217b8a
+     * めんどくさかったからまるっと入れた
+     * @param int $length
+     * @param string $chars
+     * @return string
+     */
+    function makeRandStr($length = 8, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789') {
+        $str = '';
+        $strlen = mb_strlen($chars, SYSTEM_ENCODING) - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $str .= $chars[mt_rand(0, $strlen)];
+        }
+        return $str;
+    }
+}
+
 if(!function_exists('loadFile')) {
+    /**
+     * 静的コンテンツ読み込み
+     * @param $filename
+     * @param $type
+     */
     function loadFile($filename, $type) {
 
         if(!fileCheck(VIEW_PATH . $filename)) {
@@ -123,6 +196,9 @@ if(!function_exists('loadRange')) {
 }
 
 if(!function_exists('load404')) {
+    /**
+     * もう少し汎用的なものに変えようかな・・・・
+     */
     function load404() {
 
         global $conf;
@@ -224,76 +300,76 @@ if(!function_exists('setContentsType')) {
 
         $mime_code = array(
             // text
-            'html'  => array('text/html',                       'text'),
-            'htm'   => array('text/html',                       'text'),
-            'php'   => array('text/html',                       'text'),
-            'tex'   => array('application/x-latex',             'text'),
-            'latex' => array('application/x-latex',             'text'),
-            'ltx'   => array('application/x-latex',             'text'),
-            'pdf'   => array('application/pdf',                 'text'),
-            'ps'    => array('application/postscript',          'text'),
-            'rtf'   => array('application/rtf',                 'text'),
-            'sgm'   => array('text/sgml',                       'text'),
-            'sgml'  => array('text/sgml',                       'text'),
-            'tab'   => array('text/tab-separated-values',       'text'),
-            'tsv'   => array('text/tab-separated-values',       'text'),
-            'txt'   => array('text/plain',                      'text'),
-            'xml'   => array('application/xml',                 'text'),
-            'json'  => array('application/json',                'text'),
-            'yaml'  => array('text/x-yaml',                     'text'),
-            'js'    => array('application/javascript',          'text'),
-            'css'   => array('text/css',                        'text'),
-            'dart'  => array('application/dart',                'text'),
-            'rss'   => array('application/rss+xml',             'text'),
+            'html'  => array('text/html',                        'text'),
+            'htm'   => array('text/html',                        'text'),
+            'php'   => array('text/html',                        'text'),
+            'tex'   => array('application/x-latex',              'text'),
+            'latex' => array('application/x-latex',              'text'),
+            'ltx'   => array('application/x-latex',              'text'),
+            'pdf'   => array('application/pdf',                  'text'),
+            'ps'    => array('application/postscript',           'text'),
+            'rtf'   => array('application/rtf',                  'text'),
+            'sgm'   => array('text/sgml',                        'text'),
+            'sgml'  => array('text/sgml',                        'text'),
+            'tab'   => array('text/tab-separated-values',        'text'),
+            'tsv'   => array('text/tab-separated-values',        'text'),
+            'txt'   => array('text/plain',                       'text'),
+            'xml'   => array('application/xml',                  'text'),
+            'json'  => array('application/json',                 'text'),
+            'yaml'  => array('text/x-yaml',                      'text'),
+            'js'    => array('application/javascript',           'text'),
+            'css'   => array('text/css',                         'text'),
+            'dart'  => array('application/dart',                 'text'),
+            'rss'   => array('application/rss+xml',              'text'),
 
             // compression
-            'jar'   => array('application/java-archiver',       'compression'),
-            'cpt'   => array('application/mac-compactpro',      'compression'),
-            'gz'    => array('application/x-gzip',              'compression'),
-            'hqx'   => array('application/mac-binhex40',        'compression'),
-            'sh'    => array('application/x-shar',              'compression'),
-            'shar'  => array('application/x-shar',              'compression'),
-            'sit'   => array('application/x-stuffit',           'compression'),
-            'z'     => array('application/x-compress',          'compression'),
-            'zip'   => array('application/zip',                 'compression'),
+            'jar'   => array('application/java-archiver',        'compression'),
+            'cpt'   => array('application/mac-compactpro',       'compression'),
+            'gz'    => array('application/x-gzip',               'compression'),
+            'hqx'   => array('application/mac-binhex40',         'compression'),
+            'sh'    => array('application/x-shar',               'compression'),
+            'shar'  => array('application/x-shar',               'compression'),
+            'sit'   => array('application/x-stuffit',            'compression'),
+            'z'     => array('application/x-compress',           'compression'),
+            'zip'   => array('application/zip',                  'compression'),
 
             // image
-            'ai'    => array('application/postscript',          'image'),
-            'bmp'   => array('image/x-bmp',                     'image'),
-            'rle'   => array('image/x-bmp',                     'image'),
-            'dib'   => array('image/x-bmp',                     'image'),
-            'cgm'   => array('image/cgm',                       'image'),
-            'dwf'   => array('drawing/x-dwf',                   'image'),
-            'epsf'  => array('appilcation/postscript',          'image'),
-            'eps'   => array('appilcation/postscript',          'image'),
-            'fif'   => array('image/fif',                       'image'),
-            'fpx'   => array('image/x-fpx',                     'image'),
-            'gif'   => array('image/gif',                       'image'),
-            'jpg'   => array('image/jpeg',                      'image'),
-            'jpeg'  => array('image/jpeg',                      'image'),
-            'jpe'   => array('image/jpeg',                      'image'),
-            'jfif'  => array('image/jpeg',                      'image'),
-            'jfi'   => array('image/jpeg',                      'image'),
-            'pcd'   => array('image/pcd',                       'image'),
-            'pict'  => array('image/pict',                      'image'),
-            'pct'   => array('image/pict',                      'image'),
-            'png'   => array('image/png',                       'image'),
-            'tga'   => array('image/x-targa',                   'image'),
-            'tpic'  => array('image/x-targa',                   'image'),
-            'vda'   => array('image/x-targa',                   'image'),
-            'vst'   => array('image/x-targa',                   'image'),
-            'tiff'  => array('image/tiff',                      'image'),
-            'tif'   => array('image/tiff',                      'image'),
-            'wrl'   => array('image/vrml',                      'image'),
-            'xbm'   => array('image/x-bitmap',                  'image'),
-            'xpm'   => array('image/x-xpixmap',                 'image'),
-            'ico'   => array('image/vnd.microsoft.icon',        'image'),
+            'ai'    => array('application/postscript',           'image'),
+            'bmp'   => array('image/x-bmp',                      'image'),
+            'rle'   => array('image/x-bmp',                      'image'),
+            'dib'   => array('image/x-bmp',                      'image'),
+            'cgm'   => array('image/cgm',                        'image'),
+            'dwf'   => array('drawing/x-dwf',                    'image'),
+            'epsf'  => array('appilcation/postscript',           'image'),
+            'eps'   => array('appilcation/postscript',           'image'),
+            'fif'   => array('image/fif',                        'image'),
+            'fpx'   => array('image/x-fpx',                      'image'),
+            'gif'   => array('image/gif',                        'image'),
+            'jpg'   => array('image/jpeg',                       'image'),
+            'jpeg'  => array('image/jpeg',                       'image'),
+            'jpe'   => array('image/jpeg',                       'image'),
+            'jfif'  => array('image/jpeg',                       'image'),
+            'jfi'   => array('image/jpeg',                       'image'),
+            'pcd'   => array('image/pcd',                        'image'),
+            'pict'  => array('image/pict',                       'image'),
+            'pct'   => array('image/pict',                       'image'),
+            'png'   => array('image/png',                        'image'),
+            'tga'   => array('image/x-targa',                    'image'),
+            'tpic'  => array('image/x-targa',                    'image'),
+            'vda'   => array('image/x-targa',                    'image'),
+            'vst'   => array('image/x-targa',                    'image'),
+            'tiff'  => array('image/tiff',                       'image'),
+            'tif'   => array('image/tiff',                       'image'),
+            'wrl'   => array('image/vrml',                       'image'),
+            'xbm'   => array('image/x-bitmap',                   'image'),
+            'xpm'   => array('image/x-xpixmap',                  'image'),
+            'ico'   => array('image/vnd.microsoft.icon',         'image'),
             // font(区分は画像に入れておく)
-            'woff'   => array('application/font-woff',          'image'),
-            'ttf'   =>  array('application/x-font-ttf',         'image'),
-            'otf'   =>  array('application/x-font-otf',         'image'),
-            'svgf'   => array('image/svg+xml',                  'image'),
-            'eot'   =>  array('application/vnd.ms-fontobject',  'image'),
+            'woff'   => array('application/font-woff',           'image'),
+            'ttf'   =>  array('application/x-font-ttf',          'image'),
+            'otf'   =>  array('application/x-font-otf',          'image'),
+            'svgf'   => array('image/svg+xml',                   'image'),
+            'eot'   =>  array('application/vnd.ms-fontobject',   'image'),
 
             // sound
             'aiff'  => array('audio/aiff',                       'sound'),

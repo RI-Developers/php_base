@@ -28,14 +28,23 @@ $conf = array(
             // SSL証明書を使用する場合のみ設定するといいです。
             // コメントで例も書いておきます。
             'Strict-Transport-Security' => false,
-            //'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains', // サブドメインも含む
-            //'Strict-Transport-Security' => 'max-age=31536000',                    // サブドメインは含まない
+            // 'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains', // サブドメインも含む
+            // 'Strict-Transport-Security' => 'max-age=31536000',                    // サブドメインは含まない
 
+            // 使用する場合はサイト構成を考える必要がある為デフォルトでは無効化
+            'Content-Security-Policy' => false
+            // フォールバックをデフォルトで有効化すべきか・・・
+            // 'Content-Security-Policy' => array(
+            //     'policy' => array('nonce'), // nonce以外はそのまま使います。
+            //     'nonce-fallback' => true,
+            //     'nonce-length' => 16
+            // )
         )
     ),
     'production' => array(
         'cache' => array(
             // 指定できるパターンは下の他にtext, compression, sound, other
+            // TODO:配列指定に変更
             'default' => 'cache',
             'image' => 'no-cache',
             'movie' => 'no-cache'
