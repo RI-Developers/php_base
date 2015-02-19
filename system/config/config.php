@@ -16,6 +16,7 @@
 
 
 $conf = array(
+    'extension' => array('php', 'html'),
     'encoding'   => 'UTF-8',
     '404'        => '/404.php',
     'security'   => array(

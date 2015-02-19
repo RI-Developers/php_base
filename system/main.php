@@ -81,10 +81,17 @@ $dot = strripos($load_path, '.');
 
 if($dot === false) {
 
-    if(file_exists(VIEW_PATH . $load_path . '/index.php')) {
-        $load_path .= '/index.php';
-    } else {
+    foreach($conf['extension'] as $ex) {
+        if(file_exists(VIEW_PATH . $load_path . '/index.' . $ex)) {
+            $load_path .= '/index.' . $ex;
+            $extension = $ex;
+            break;
+        }
+    }
+
+    if(empty($extension)) {
         $load_path .= '.php';
+        $extension = 'php';
     }
 
     $extension = 'php';

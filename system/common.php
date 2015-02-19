@@ -330,11 +330,11 @@ if(!function_exists('setStatusHeader')) {
 
 if(!function_exists('setContentsType')) {
     /**
-     * @param string $extention
+     * @param string $extension
      * @param string $mime_type
      * @return string text|compression|image|sound|movie|other
      */
-    function setContentsType($extention = 'html', $mime_type = '') {
+    function setContentsType($extension = 'html', $mime_type = '') {
 
         global $conf;
 
@@ -485,22 +485,22 @@ if(!function_exists('setContentsType')) {
         );
 
         if($mime_type == '') {
-            if(!isset($mime_code[$extention])) {
-                $extention = 'php';
+            if(!isset($mime_code[$extension])) {
+                $extension = 'php';
             }
 
-            $mime_type = $mime_code[$extention][0];
+            $mime_type = $mime_code[$extension][0];
         }
 
         $encoding = SYSTEM_ENCODING;
 
-        if($mime_code[$extention][1] === 'text') {
+        if($mime_code[$extension][1] === 'text') {
             header("Content-Type: {$mime_type}; charset={$encoding}", true);
         } else {
             header("Content-Type: {$mime_type}", true);
         }
 
-        return $mime_code[$extention][1];
+        return $mime_code[$extension][1];
 
     }
 
