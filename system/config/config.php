@@ -15,7 +15,7 @@
  ***********************************************************************************/
 
 
-$conf = array(
+return array(
     'extension' => array('php', 'html'),
     'encoding'   => 'UTF-8',
     '404'        => '/404.php',
@@ -57,7 +57,7 @@ $conf = array(
     'developer' => array(
         'cache' => 'no-cache',
         'debug' => true,
-        'error_reporting' => E_ALL  | E_STRICT,
+        'error_reporting' => E_ALL | E_STRICT,
         'log'   => false
     )
 );

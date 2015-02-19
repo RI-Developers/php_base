@@ -54,7 +54,7 @@ if(!function_exists('setSecurityHeader')) {
     function setSecurityHeader() {
         global $conf;
 
-        if (isset($conf['security']['header']) && $conf['security']['header'] === false) {
+        if (empty($conf['security']['header']) || $conf['security']['header'] === false) {
             return;
         }
 
@@ -64,7 +64,7 @@ if(!function_exists('setSecurityHeader')) {
          * XSSフィルター機能の有効化
          * デフォルト値推奨
          */
-        if (!(isset($header['X-XSS-Protection']) && $header['X-XSS-Protection'] === false)) {
+        if (isset($header['X-XSS-Protection']) && $header['X-XSS-Protection'] !== false) {
             header('X-XSS-Protection: ' . $header['X-XSS-Protection']);
         }
 
@@ -72,7 +72,7 @@ if(!function_exists('setSecurityHeader')) {
          * サイトへのアクセスを次回以降最初からSSL通信を試す。
          * 詳しくはconfig.phpを見てください。
          */
-        if (isSSL() && !(isset($header['Strict-Transport-Security']) && $header['Strict-Transport-Security'] === false)) {
+        if (isSSL() && isset($header['Strict-Transport-Security']) && $header['Strict-Transport-Security'] !== false) {
             header('Strict-Transport-Security: ' . $header['Strict-Transport-Security']);
         }
 
@@ -81,7 +81,7 @@ if(!function_exists('setSecurityHeader')) {
          * nonceを使用する場合はCSP_NONCE_VALUEが定義されます。
          * TODO:script-src以外の対応
          */
-        if (!(isset($header['Content-Security-Policy']) && $header['Content-Security-Policy'] === false)) {
+        if (isset($header['Content-Security-Policy']) && $header['Content-Security-Policy'] !== false) {
 
             $csp = $header['Content-Security-Policy'];
 

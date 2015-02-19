@@ -5,14 +5,14 @@
  */
 if (!defined('BASE_PATH')) exit();
 
-require_once SYS_PATH . '/config/config.php';
+$conf = require_once SYS_PATH . '/config/config.php';
 // 独自の定義で上書きしたい場合
 if(file_exists(SYS_PATH . '/config/my_conf.php')) {
-    require_once SYS_PATH . '/config/my_conf.php';
+    $conf = array_merge_recursive($conf, require_once SYS_PATH . '/config/my_conf.php');
 }
 // ローカルのみに反映させたいものがある場合
 if(file_exists(SYS_PATH . '/config/dev_conf.php')) {
-    require_once SYS_PATH . '/config/dev_conf.php';
+    $conf = array_merge_recursive($conf, require_once SYS_PATH . '/config/dev_conf.php');
 }
 
 require_once SYS_PATH . '/common.php';
