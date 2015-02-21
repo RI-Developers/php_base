@@ -1,5 +1,11 @@
 RewriteEngine On
 RewriteBase /
+
+# 末尾スラッシュ強制
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{REQUEST_URI} !\.[^/\.]+$
+RewriteRule .* %{REQUEST_URI}/ [L,R]
+
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
