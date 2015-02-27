@@ -94,7 +94,7 @@ if(!function_exists('setSecurityHeader')) {
                     } else {
                         $src .= " '" . $policy . "'";
                     }
-                    break;
+                    continue;
                 }
 
                 if(isset($csp['nonce-fallback']) && $csp['nonce-fallback'] && $key === 0) {
