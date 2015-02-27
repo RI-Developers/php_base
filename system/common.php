@@ -88,7 +88,7 @@ if(!function_exists('setSecurityHeader')) {
             $src = '';
 
             foreach($csp['policy'] as $key => $policy) {
-                if(!$policy === 'nonce') {
+                if($policy !== 'nonce') {
                     if(strpos($policy, '.') === true) {
                         $src .= ' ' . $policy;
                     } else {
